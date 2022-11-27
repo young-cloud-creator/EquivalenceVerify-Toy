@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+<VBox alignment="CENTER" prefHeight="640.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="toy.equivalence.verify.equivalenceverifytoy.EntryViewController">
     <Label alignment="CENTER" text="程序等价性确认工具">
       <font>
          <Font size="32.0" />
@@ -18,7 +18,7 @@
          <font>
             <Font size="16.0" />
          </font></TextField>
-        <Button mnemonicParsing="false" text="选择路径" />
+        <Button fx:id="selectPath" mnemonicParsing="false" onMouseClicked="#onSelectPathClicked" text="选择路径" />
     </HBox>
     <Button mnemonicParsing="false" text="开始确认等价性" />
 </VBox>

@@ -11,11 +11,9 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         final String windowTitle = "程序等价性确认工具";
-        final int windowWidth = 1024;
-        final int windowHeight = 640;
 
         FXMLLoader fxmlLoader = new FXMLLoader(MainApplication.class.getResource("entry-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), windowWidth, windowHeight);
+        Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle(windowTitle);
         stage.setScene(scene);
         stage.show();

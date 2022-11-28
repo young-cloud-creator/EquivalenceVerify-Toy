@@ -3,6 +3,7 @@ package toy.equivalence.verify;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -13,7 +14,7 @@ import toy.equivalence.JudgeResult;
 import toy.equivalence.judge.ui.Controller;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 public class EntryViewController {
 
@@ -68,9 +69,23 @@ public class EntryViewController {
         }
     }
 
-    public void onJudgeComplete(ArrayList<JudgeResult> results) {
+    public void onJudgeComplete(List<JudgeResult> results, File dir) {
         Platform.runLater(() -> {
-
+            if (getProcessScene().getWindow() instanceof Stage stage) {
+                try {
+                    var verifyViewLoader = new FXMLLoader(getClass().getResource("verify-view.fxml"));
+                    Parent parent = verifyViewLoader.load();
+                    VerifyViewController verifyViewController = verifyViewLoader.getController();
+                    verifyViewController.initController(results, dir);
+                    stage.setScene(new Scene(parent));
+                }
+                catch (IOException e) {
+                    showAlert(":(", "看上去有些不妙，重新打开软件可能会解决问题", e.getMessage());
+                }
+            }
+            else {
+                showAlert(":(", "出现了一些问题", "Window is not an instance of Stage");
+            }
         });
     }
 

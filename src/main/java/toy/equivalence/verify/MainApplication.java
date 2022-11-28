@@ -1,4 +1,4 @@
-package toy.equivalence.verify.equivalenceverifytoy;
+package toy.equivalence.verify;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;

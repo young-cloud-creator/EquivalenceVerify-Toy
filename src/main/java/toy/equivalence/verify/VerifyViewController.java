@@ -70,7 +70,7 @@ public class VerifyViewController {
 
     @FXML
     protected void onEqualClicked() {
-        curEquivalence.unionRoot(file1Idx, file2Idx);
+        curEquivalence.unionRoot(file1Idx, file2Idx-1);
         showNextItem();
     }
 
@@ -154,6 +154,8 @@ public class VerifyViewController {
                 generalUnknownWriter.close();
                 var completeViewLoader = new FXMLLoader(getClass().getResource("complete-view.fxml"));
                 Parent parent = completeViewLoader.load();
+                CompleteViewController completeViewController = completeViewLoader.getController();
+                completeViewController.initController(dir);
                 stage.setScene(new Scene(parent));
             }
             catch (IOException e) {

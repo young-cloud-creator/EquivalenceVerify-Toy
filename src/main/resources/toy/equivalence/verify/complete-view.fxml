@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="toy.equivalence.verify.CompleteViewController"
-            prefHeight="640.0" prefWidth="1024.0">
-
-</AnchorPane>
+<?import javafx.scene.text.Font?>
+<VBox xmlns="http://javafx.com/javafx" alignment="CENTER" spacing="50.0"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="toy.equivalence.verify.CompleteViewController"
+      prefHeight="640.0" prefWidth="1024.0">
+    <Label fx:id="infoLabel">
+        <font>
+            <Font size="18"/>
+        </font>
+    </Label>
+    <Button onMouseClicked="#onBackButtonClicked" text="返回主界面" />
+</VBox>

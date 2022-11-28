@@ -1,5 +1,6 @@
 package toy.equivalence.verify;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -25,6 +26,7 @@ public class EntryViewController {
     private TextField targetPath;
 
     private File targetDir;
+    private Scene processScene;
 
     @FXML
     protected void onSelectPathClicked() {
@@ -47,7 +49,6 @@ public class EntryViewController {
 
     @FXML
     protected void onDoVerifyClicked() {
-        var processViewFxmlLoader = new FXMLLoader(getClass().getResource("process-view.fxml"));
         final String errorTitle = "出现了一些问题";
         final String errorTips = "出现了一些问题，请重试";
 
@@ -55,7 +56,7 @@ public class EntryViewController {
             Controller controller = new Controller(this);
             try {
                 controller.setDir(this.targetDir);
-                stage.setScene(new Scene(processViewFxmlLoader.load()));
+                stage.setScene(getProcessScene());
                 new Thread(controller::doJudge).start();
             }
             catch (IOException e) {
@@ -63,16 +64,29 @@ public class EntryViewController {
             }
         }
         else {
-            showAlert(errorTitle, errorTips, "doVerify.getScene().getWindow() is not an instance of Stage");
+            showAlert(errorTitle, errorTips, "Window is not an instance of Stage");
         }
     }
 
     public void onJudgeComplete(ArrayList<JudgeResult> results) {
+        Platform.runLater(() -> {
 
+        });
     }
 
     public void onJudgeTimeout() {
-        showAlert("运行时间过长", "机器等价判断时间过长，可能出现了问题，已停止等价判断", ":(");
+        Platform.runLater(() -> {
+            if (getProcessScene().getWindow() instanceof Stage stage) {
+                try {
+                    var entryViewFxmlLoader = new FXMLLoader(getClass().getResource("entry-view.fxml"));
+                    stage.setScene(new Scene(entryViewFxmlLoader.load()));
+                } catch (IOException ignored) {}
+            }
+            else {
+                showAlert(":(", "出现了一些问题", "Window is not an instance of Stage");
+            }
+            showAlert("运行时间过长", "机器等价判断时间过长，可能出现了问题，已停止等价判断", ":(");
+        });
     }
 
     private void showAlert(String errorTitle, String errorTips, String errorContent) {
@@ -81,5 +95,16 @@ public class EntryViewController {
         alert.setHeaderText(errorTips);
         alert.setContentText(errorContent);
         alert.show();
+    }
+
+    private Scene getProcessScene() {
+        if (this.processScene == null) {
+            var processViewFxmlLoader = new FXMLLoader(getClass().getResource("process-view.fxml"));
+            try {
+                this.processScene = new Scene(processViewFxmlLoader.load());
+            }
+            catch (IOException ignored) {}
+        }
+        return this.processScene;
     }
 }

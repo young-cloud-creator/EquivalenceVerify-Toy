@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+
+<VBox alignment="CENTER" prefHeight="640.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="toy.equivalence.verify.EntryViewController">
+      <Label text="处理中，请耐心等待">
+         <font>
+            <Font size="25.0" />
+         </font>
+      </Label>
+</VBox>

@@ -14,7 +14,7 @@
          <Insets bottom="100.0" />
       </padding></Label>
     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-        <TextField editable="false" focusTraversable="false" text="选择目标路径...">
+        <TextField fx:id="targetPath" prefWidth="360.0" editable="false" focusTraversable="false" text="选择目标路径...">
          <font>
             <Font size="16.0" />
          </font></TextField>

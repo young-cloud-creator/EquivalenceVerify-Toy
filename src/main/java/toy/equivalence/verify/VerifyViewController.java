@@ -1,6 +1,9 @@
 package toy.equivalence.verify;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -34,16 +37,17 @@ public class VerifyViewController {
     private int file1Idx = 0;
     private int file2Idx = 1;
     private UFS curEquivalence;
-    private boolean isFirstVerify = true;
     private OutputStreamWriter generalEqualWriter;
     private OutputStreamWriter generalUnequalWriter;
     private OutputStreamWriter generalUnknownWriter;
     private List<List<Integer> > unknownList;
+    private File dir;
 
     public void initController(List<JudgeResult> results, File dir) throws IOException {
         this.results = new LinkedList<>(results);
+        this.dir = dir;
 
-        File outputDir = new File(dir.getCanonicalPath()+"/output");
+        File outputDir = new File(this.dir.getCanonicalPath()+"/output");
         File outputEqual = new File(outputDir.getCanonicalPath()+"/equal.csv");
         File outputUnequal = new File(outputDir.getCanonicalPath()+"/unequal.csv");
         File outputUnknown = new File(outputDir.getCanonicalPath()+"/unknown.csv");
@@ -83,18 +87,6 @@ public class VerifyViewController {
 
     private void showNextItem() {
         if (curVerifyCollection == null) {
-            if(isFirstVerify) {
-                isFirstVerify = false;
-            }
-            else {
-                try {
-                    output2csv();
-                }
-                catch (IOException e) {
-                    showAlert("输出结果到.csv文件时发生错误", e.getMessage());
-                }
-            }
-
             if (results.isEmpty()) {
                 verifyComplete();
             }
@@ -126,6 +118,12 @@ public class VerifyViewController {
                 showNextItem();
             }
             else {
+                try {
+                    output2csv();
+                }
+                catch (IOException e) {
+                    showAlert("输出结果到.csv文件时发生错误", e.getMessage());
+                }
                 curVerifyCollection = null;
                 showNextItem();
             }
@@ -150,7 +148,17 @@ public class VerifyViewController {
 
     private void verifyComplete() {
         if (leftText.getScene().getWindow() instanceof Stage stage) {
-
+            try {
+                generalUnequalWriter.close();
+                generalEqualWriter.close();
+                generalUnknownWriter.close();
+                var completeViewLoader = new FXMLLoader(getClass().getResource("complete-view.fxml"));
+                Parent parent = completeViewLoader.load();
+                stage.setScene(new Scene(parent));
+            }
+            catch (IOException e) {
+                showAlert("看上去有些不妙，重新打开软件可能会解决问题", e.getMessage());
+            }
         }
         else {
             showAlert( "出现了一些问题", "Window is not an instance of Stage");

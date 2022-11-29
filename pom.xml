@@ -72,7 +72,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                toy.equivalence.verify.equivalenceverifytoy/toy.equivalence.verify.MainApplication
+                                toy.equivalence.verify.MainApplication
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>

@@ -2,22 +2,23 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.web.*?>
 
 <VBox alignment="CENTER" prefHeight="640.0" prefWidth="1024.0" spacing="8.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="toy.equivalence.verify.VerifyViewController">
-    <HBox alignment="CENTER" prefHeight="550.0" spacing="16.0" >
-        <VBox alignment="CENTER" spacing="8.0" prefWidth="500.0">
+    <HBox alignment="CENTER" prefHeight="550.0" spacing="16.0">
+        <VBox alignment="CENTER" prefWidth="500.0" spacing="8.0">
             <Label fx:id="leftPath" />
-            <TextArea fx:id="leftText" editable="false" prefHeight="480.0" />
+            <WebView fx:id="leftView" prefHeight="480.0" />
         </VBox>
-        <VBox alignment="CENTER" spacing="8.0" prefWidth="500.0">
+        <VBox alignment="CENTER" prefWidth="500.0" spacing="8.0">
             <Label fx:id="rightPath" />
-            <TextArea fx:id="rightText" editable="false" prefHeight="480.0" />
+            <WebView fx:id="rightView" prefHeight="480.0" />
         </VBox>
     </HBox>
     <Label text="机器判断上面的两个程序是等价的，请确认它们的实际关系" />
     <HBox alignment="CENTER" spacing="50.0">
-        <Button mnemonicParsing="false" text="等价" onMouseClicked="#onEqualClicked" />
-        <Button mnemonicParsing="false" text="不等价" onMouseClicked="#onUnequalClicked" />
-        <Button mnemonicParsing="false" text="不确定" onMouseClicked="#onUnknownClicked" />
+        <Button mnemonicParsing="false" onMouseClicked="#onEqualClicked" text="等价" />
+        <Button mnemonicParsing="false" onMouseClicked="#onUnequalClicked" text="不等价" />
+        <Button mnemonicParsing="false" onMouseClicked="#onUnknownClicked" text="不确定" />
     </HBox>
 </VBox>

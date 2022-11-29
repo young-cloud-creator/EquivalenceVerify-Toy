@@ -1,16 +1,17 @@
 package toy.equivalence.verify;
 
+import com.github.difflib.text.DiffRowGenerator;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.web.WebView;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import toy.equivalence.JudgeResult;
 import toy.equivalence.judge.dataStructure.UFS;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,9 +29,9 @@ public class VerifyViewController {
     @FXML
     private Label rightPath;
     @FXML
-    private TextArea leftText;
+    private WebView leftView;
     @FXML
-    private TextArea rightText;
+    private WebView rightView;
 
     private LinkedList<JudgeResult> results;
     private JudgeResult curVerifyCollection = null;
@@ -87,11 +88,13 @@ public class VerifyViewController {
 
     private void showNextItem() {
         if (curVerifyCollection == null) {
-            if (results.isEmpty()) {
+            curVerifyCollection = results.poll();
+            file1Idx = 0;
+            file2Idx = 1;
+            if (curVerifyCollection == null) {
                 verifyComplete();
             }
             else {
-                curVerifyCollection = results.poll();
                 int fileNum = curVerifyCollection.getFiles().length;
                 curEquivalence = new UFS(fileNum);
                 unknownList = new ArrayList<>();
@@ -138,16 +141,99 @@ public class VerifyViewController {
             rightPath.setText(file2.getCanonicalPath());
             String fileContent1 = Files.readString(Paths.get(file1.getCanonicalPath()));
             String fileContent2 = Files.readString(Paths.get(file2.getCanonicalPath()));
-            leftText.setText(fileContent1);
-            rightText.setText(fileContent2);
+            var processedString = processContent(fileContent1, fileContent2);
+            leftView.getEngine().loadContent(processedString.getKey());
+            rightView.getEngine().loadContent(processedString.getValue());
         }
         catch (IOException e) {
             showAlert("打开程序源文件时发生错误，已跳过文件", e.getMessage());
         }
     }
 
+    private Pair<String, String> processContent(String content1, String content2) {
+        Pair<String, String> diffResult = diffString(content1.lines().toList(), content2.lines().toList());
+        content1 = diffResult.getKey();
+        content2 = diffResult.getValue();
+        content1 = "<html><head><style type=\"text/css\">" +
+                "p{" +
+                    "margin: 0px;" + "font-size: large;" +
+                "}" +
+                "</style></head>" +
+                "<body>"+content1+"</body></html>";
+
+        content2 = "<html><head><style type=\"text/css\">" +
+                "p{" +
+                "margin: 0px;" + "font-size: large;" +
+                "}" +
+                "</style></head>" +
+                "<body>"+content2+"</body></html>";
+
+        return new Pair<>(content1, content2);
+    }
+
+    private Pair<String, String> diffString(List<String> original, List<String> revised) {
+        StringBuilder content1 = new StringBuilder();
+        StringBuilder content2 = new StringBuilder();
+        var builder = DiffRowGenerator.create();
+        builder.showInlineDiffs(false);
+        var generator = builder.build();
+        var diffRows = generator.generateDiffRows(original, revised);
+
+        final String DELETION = "<nobr><span style=\"background: rgba(0, 0, 0, 0.3);\">" +
+                "<p style=\"background: rgba(0, 0, 0, 0.3);" +
+                "${text}" +
+                "</nobr>";
+        final String INSERTION = "<nobr><span style=\"background: rgba(0, 128, 0, 0.3);\">" +
+                "<p style=\"background: rgba(0, 128, 0, 0.3);" +
+                "${text}" + "</nobr>";
+        final String CHANGE = "<nobr><span style=\"background: rgba(0, 0, 128, 0.3);\">" +
+                "<p style=\"background: rgba(0, 0, 128, 0.3);" +
+                "${text}" + "</nobr>";
+        final String EQUAL = "<nobr>" + "<p style=\"background: rgba(0, 0, 0, 0);" + "${text}</nobr>";
+
+        for (var diffRow : diffRows) {
+            switch (diffRow.getTag()) {
+                case INSERT -> {
+                    content1.append(processHTML("<br>", DELETION));
+                    content2.append(processHTML(diffRow.getNewLine(), INSERTION));
+                }
+                case CHANGE -> {
+                    content1.append(processHTML(diffRow.getOldLine(), CHANGE));
+                    content2.append(processHTML(diffRow.getNewLine(), CHANGE));
+                }
+                case DELETE -> {
+                    content1.append(processHTML(diffRow.getOldLine(), INSERTION));
+                    content2.append(processHTML("<br>", DELETION));
+                }
+                case EQUAL -> {
+                    content1.append(processHTML(diffRow.getOldLine(), EQUAL));
+                    content2.append(processHTML(diffRow.getNewLine(), EQUAL));
+                }
+            }
+        }
+
+        return new Pair<>(content1.toString(), content2.toString());
+    }
+
+    private String processHTML(String s, String template) {
+        if (s.isEmpty()) {
+            s = "<br>";
+        }
+
+        if (s.startsWith("    ")) {
+            s = s.replaceAll(" ", "&nbsp;");
+            s = template.replace("${text}", " text-indent:20px;\">"+s);
+        }
+        else {
+            s = s.replaceAll(" ", "&nbsp;");
+            s = template.replace("${text}", "\">"+s);
+        }
+        s += "</p>";
+        return s;
+    }
+
     private void verifyComplete() {
-        if (leftText.getScene().getWindow() instanceof Stage stage) {
+        if (leftPath.getScene().getWindow() instanceof Stage stage) {
             try {
                 generalUnequalWriter.close();
                 generalEqualWriter.close();
